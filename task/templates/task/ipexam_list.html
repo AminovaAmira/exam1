@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список экзаменов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .exam-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .exam-card h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .exam-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border: 1px solid #eee;
+        }
+        .user-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .user-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .no-exams {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Список экзаменов</h1>
+        <p><strong>Студент:</strong> Аминова Амира Айнуровна</p>
+        <p><strong>Группа:</strong> 231-365</p>
+    </div>
+
+    {% if exams %}
+        {% for exam in exams %}
+        <div class="exam-card">
+            <h2>{{ exam.name }}</h2>
+            
+            <p><strong>Дата создания:</strong> {{ exam.created_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Дата проведения экзамена:</strong> {{ exam.exam_date|date:"d.m.Y H:i" }}</p>
+            <p><strong>Статус:</strong> {% if exam.is_public %}Опубликован{% else %}Не опубликован{% endif %}</p>
+            
+            {% if exam.image %}
+            <div>
+                <strong>Изображение задания:</strong>
+                <img src="{{ exam.image.url }}" alt="Задание по экзамену {{ exam.name }}" class="exam-image">
+            </div>
+            {% endif %}
+            
+            <div>
+                <strong>Список студентов:</strong>
+                <ul class="user-list">
+                    {% for user in exam.users.all %}
+                    <li>{{ user.get_full_name|default:user.username }} ({{ user.email }})</li>
+                    {% empty %}
+                    <li>Студенты не назначены</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-exams">Нет опубликованных экзаменов.</p>
+    {% endif %}
+</body>
+</html>
